@@ -1,17 +1,5 @@
-// --------------------------------------------------------------------
-// Ipelet for creating regular k-gons
-// --------------------------------------------------------------------
-#include <ipelet.h>
-#include <ipepath.h>
-#include <ipepage.h>
-using namespace ipe;
-// --------------------------------------------------------------------
-class KGonIpelet : public Ipelet {
-public:
-	virtual int ipelibVersion() const { return IPELIB_VERSION; }
-	virtual bool run(int, IpeletData *data, IpeletHelper *helper);
-};
-// --------------------------------------------------------------------
+#include "ipesurfer2.h"
+
 bool KGonIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 	Page *page = data->iPage;
 	int sel = page->primarySelection();
@@ -53,8 +41,3 @@ bool KGonIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 	helper->message("Created regular k-gon");
 	return true;
 }
-// --------------------------------------------------------------------
-IPELET_DECLARE Ipelet *newIpelet() {
-	return new KGonIpelet;
-}
-// --------------------------------------------------------------------

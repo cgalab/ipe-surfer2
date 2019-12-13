@@ -47,7 +47,7 @@ parameters = { n = "7" }
 
 
 function c_test(model)
-  if not ipelet then ipelet = assert(ipe.Ipelet("surfer2")) end
+  if not ipelet then ipelet = assert(ipe.Ipelet("libipesurfer2")) end
   model:runIpelet(label, ipelet, 1, parameters)
 end
 
