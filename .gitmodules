@@ -1,0 +1,3 @@
+[submodule "surfer2"]
+	path = surfer2
+	url = https://github.com/cgalab/surfer2
