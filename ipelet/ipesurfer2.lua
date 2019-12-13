@@ -21,40 +21,40 @@ about = [[ Create the (weighted) straight skeleton of a PSLG. ]]
 
 ipelet = false
 
-function collect_input(model)
-   local p = model:page()
-   local newPage  = ipe.Page()
-   local newLayer = newPage:addLayer("input")
-   for i, obj, sel, layer in p:objects() do
-      if sel then
-         newPage:insert(nil,obj,nil,newLayer)
-	   end	    
-   end
-   newPage:removeLayer("alpha")
-   newPage:setVisible(1, "input", true)
-   return newPage
-end
-
-function create_skeleton(model)
-   page = collect_input(model)
-   doc = ipe.Document()
-   doc:insert(1,page)
-   doc:save(".surfer2-ipelet.ipe", nil, nil)
-end
+--function collect_input(model)
+--   local p = model:page()
+--   local newPage  = ipe.Page()
+--   local newLayer = newPage:addLayer("input")
+--   for i, obj, sel, layer in p:objects() do
+--      if sel then
+--         newPage:insert(nil,obj,nil,newLayer)
+--	   end	    
+--   end
+--   newPage:removeLayer("alpha")
+--   newPage:setVisible(1, "input", true)
+--   return newPage
+--end
+--
+--function create_skeleton(model)
+--   page = collect_input(model)
+--   doc = ipe.Document()
+--   doc:insert(1,page)
+--   doc:save(".surfer2-ipelet.ipe", nil, nil)
+--end
 
 -- parameters for the C++ code
 parameters = { n = "7" }
 
 
-function c_test(model)
+function create_skeleton(model)
   if not ipelet then ipelet = assert(ipe.Ipelet("libipesurfer2")) end
   model:runIpelet(label, ipelet, 1, parameters)
 end
 
 methods = {
-  { label="Create Skeleton", run = create_skeleton },
-  { label="Run C", run = c_test},
+  --{ label="Create Skeleton", run = create_skeleton },
+  { label="Create Skeleton", run = create_skeleton},
 }
 
 -- define a shortcut for this function
---shortcuts.ipelet_1_skeleton = "Shift+H"
+shortcuts.ipelet_1_ipesurfer2 = "Shift+S"

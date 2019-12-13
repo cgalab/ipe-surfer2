@@ -3,6 +3,7 @@
 #include <ipelet.h>
 #include <ipepath.h>
 #include <ipepage.h>
+
 using namespace ipe;
 
 IPELET_DECLARE Ipelet *newIpelet();
