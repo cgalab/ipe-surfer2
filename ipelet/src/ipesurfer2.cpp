@@ -1,22 +1,47 @@
 
 #include <iostream>
+#include <sstream>
+#include <string>
 
 #include "ipesurfer2.h"
 
 bool KGonIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
+	std::stringstream ss;
+
+	/* check if something is selected */
 	Page *page = data->iPage;
 	int sel = page->primarySelection();
-	if (sel < 0) {
-		helper->message("No selection");
-		return false;
+	if (sel < 0) {helper->message("No selection");return false;}
+
+	/* get selected paths from page */
+	std::vector<const Path*> selection;
+	for(size_t i = 0; i < page->count(); ++i) {
+		if(page->select(i) > 0) {
+			selection.emplace_back(page->object(i)->asPath());
+		}
 	}
 
-	const Path *p = page->object(sel)->asPath();
+//	ss << " Selected paths: " << selection.size() << " ! ";
+//	helper->message(ss.str().c_str());
+//	ss.clear();
 
-	std::string message("num sub paths: " + p->shape().countSubPaths());
-	helper->message(message.c_str());
+	std::vector<CurveSegment> segments;
+	/* get segments from selection */
+	for(auto p : selection) {
+		if(p->shape().isSegment()) {
+			for(size_t i = 0; i < p->shape().subPath(0)->asCurve()->countSegments(); ++i) {
+				segments.emplace_back(p->shape().subPath(0)->asCurve()->segment(i));
+			}
+		}
+	}
+
+	for(auto s : segments) {
+		auto Ps = s.arc().beginp();
+		auto Pe = s.arc().endp();
+	}
 
 
+//	const Path *p = page->object(sel)->asPath();
 //	if (p == 0 || p->shape().countSubPaths() != 1 ||
 //			p->shape().subPath(0)->type() != SubPath::EEllipse) {
 //		helper->message("Primary selection is not a circle");
@@ -47,6 +72,6 @@ bool KGonIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 //	shape.appendSubPath(sp);
 //	Path *obj = new Path(data->iAttributes, shape);
 //	page->append(ESecondarySelected, data->iLayer, obj);
-////	helper->message("Created regular k-gon");
+//	helper->message("Created regular k-gon");
 	return true;
 }
