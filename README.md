@@ -20,7 +20,11 @@ In case the repository is already checked out without the submodules enter use:
 
 # Usage
 
-Copy or link the .so and .lua files into `~/.ipe/ipelets`
+Copy or link the 
+
+.lua-file to `~/.ipe/ipelets`
+	
+.so-file to a path that is in `LD_LIBRARY`
 
 # License
 
