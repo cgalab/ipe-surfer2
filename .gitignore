@@ -1,0 +1,6 @@
+.settings
+.pro*
+.cpro*
+*.swp
+*.so
+*.o
