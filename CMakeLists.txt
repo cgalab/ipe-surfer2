@@ -23,7 +23,7 @@ set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-unused-parameter" )
 set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-unused-variable" )
 
 if( NOT CMAKE_BUILD_TYPE )
-    set( CMAKE_BUILD_TYPE Debug CACHE STRING
+    set( CMAKE_BUILD_TYPE Release CACHE STRING
        "Choose the type of build, options are: Debug Release."
        FORCE )
 endif()
@@ -45,4 +45,7 @@ configure_file (
 )
 include_directories("${PROJECT_BINARY_DIR}")
 
-subdirs (ipelet)
+set( SHARED_LIB "compile shared lib for surfer" ON )
+
+SET(SURFVERSION "1.99")
+subdirs (surfer2/surf ipelet)
