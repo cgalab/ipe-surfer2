@@ -21,39 +21,38 @@ about = [[ Create the (weighted) straight skeleton of a PSLG. ]]
 
 ipelet = false
 
---function collect_input(model)
---   local p = model:page()
---   local newPage  = ipe.Page()
---   local newLayer = newPage:addLayer("input")
---   for i, obj, sel, layer in p:objects() do
---      if sel then
---         newPage:insert(nil,obj,nil,newLayer)
---	   end	    
---   end
---   newPage:removeLayer("alpha")
---   newPage:setVisible(1, "input", true)
---   return newPage
---end
---
---function create_skeleton(model)
---   page = collect_input(model)
---   doc = ipe.Document()
---   doc:insert(1,page)
---   doc:save(".surfer2-ipelet.ipe", nil, nil)
---end
-
 -- parameters for the C++ code
-parameters = { n = "7" }
-
+parameters = { kind = "0"}
 
 function create_skeleton(model)
+   run_ipelet(model,0)
+end
+
+function create_offset(model)
+   run_ipelet(model,1)
+end
+
+function create_both(model)
+   run_ipelet(model,2)
+end
+
+function create_both_sep(model)
+   run_ipelet(model,3)
+end
+
+
+function run_ipelet(model, kind)
   if not ipelet then ipelet = assert(ipe.Ipelet("libipesurfer2")) end
+  parameters.kind = tostring(kind)
   model:runIpelet(label, ipelet, 1, parameters)
 end
 
 methods = {
   --{ label="Create Skeleton", run = create_skeleton },
-  { label="Create Skeleton", run = create_skeleton},
+  { label="Compute Skeleton", run = create_skeleton},
+  { label="Compute Offset", run = create_offset},
+  { label="Compute Skeleton and Offset", run = create_both},
+  { label="Compute Skeleton and Offset (sep. layers)", run = create_both_sep},
 }
 
 -- define a shortcut for this function
