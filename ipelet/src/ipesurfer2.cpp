@@ -33,8 +33,7 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 		helper->message("surfer 2 -- more than one segment please!"); return false;
 	}
 
-	ISBasicInput* input = new ISBasicInput(points,edges,edgeWeights,vertexDegree);
-	SkeletonStructure* s = new SkeletonStructure(*input);
+	auto s = std::make_unique<SkeletonStructure>( ISBasicInput(points,edges,edgeWeights,vertexDegree) );
 	s->initialize(restrict_component);
 	s->wp.advance_to_end();
 	auto& sk = s->get_skeleton();
@@ -113,9 +112,6 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 		}
 		helper->message("Skeleton Computed.");
 	}
-
-	delete input;
-	delete s;
 
 	return true;
 }

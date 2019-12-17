@@ -93,16 +93,15 @@ public:
 			std::vector<double> m_edgeWeights,
 			std::vector<unsigned> m_degree
 	) {
-		int cnt_deg_1 = 0;
 		for(size_t i = 0; i < p_points.size(); ++i) {
 			auto p = p_points[i];
 			add_vertex(Vertex(Point_2(p.first,p.second),m_degree[i],i));
-			if(m_degree[i] == 1) {++cnt_deg_1;}
 		}
 		for(size_t i = 0; i < m_edges.size(); ++i) {
 			auto e = m_edges[i];
 			add_edge(e.first,e.second,m_edgeWeights[i]);
 		}
-		set_num_of_deg1_vertices(cnt_deg_1);
+
+		finalize();
 	}
 };
