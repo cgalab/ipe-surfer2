@@ -15,44 +15,28 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-label = "Surfer2"
+label = "Skeleton (Surfer2)"
 
 about = [[ Create the (weighted) straight skeleton of a PSLG. ]]
 
 ipelet = false
 
 -- parameters for the C++ code
-parameters = { kind = "0"}
+--parameters = { kind = "0"}
 
-function create_skeleton(model)
-   run_ipelet(model,0)
-end
-
-function create_offset(model)
-   run_ipelet(model,1)
-end
-
-function create_both(model)
-   run_ipelet(model,2)
-end
-
-function create_both_sep(model)
-   run_ipelet(model,3)
-end
-
-
-function run_ipelet(model, kind)
+function run(model, num)
+--  parameters.kind = tostring(num-1)
   if not ipelet then ipelet = assert(ipe.Ipelet("libipesurfer2")) end
-  parameters.kind = tostring(kind)
-  model:runIpelet(label, ipelet, 1, parameters)
+  model:runIpelet(label, ipelet, num) --, parameters)
 end
 
 methods = {
-  --{ label="Create Skeleton", run = create_skeleton },
-  { label="Compute Skeleton", run = create_skeleton},
-  { label="Compute Offset", run = create_offset},
-  { label="Compute Skeleton and Offset", run = create_both},
-  { label="Compute Skeleton and Offset (sep. layers)", run = create_both_sep},
+  { label="Compute Skeleton" },
+  { label="Compute Interior Skeleton" },
+  { label="Compute Exterior Skeleton" },
+  { label="Compute Offset" },
+  { label="Compute Skeleton and Offset" },
+  { label="Compute Skeleton and Offset (sep. layers)" },
 }
 
 -- define a shortcut for this function

@@ -16,14 +16,16 @@ IPELET_DECLARE Ipelet *newIpelet();
 class SurfIpelet : public Ipelet {
 public:
 	virtual int ipelibVersion() const { return IPELIB_VERSION; }
-	virtual bool run(int, IpeletData *data, IpeletHelper *helper);
+	virtual bool run(int method, IpeletData *data, IpeletHelper *helper);
+	~SurfIpelet() {}
 
 private:
-	bool separateLayers  = false;
-	bool computeOffset   = false;
-	bool computeSkeleton = true;
+	bool separateLayers    = false;
+	bool computeOffset     = false;
+	bool computeSkeleton   = true;
+	int restrict_component = -1;
 
-	void parseParameters(IpeletHelper* helper);
+	void parseParameters(int kind);
 
 	std::vector<const Path*> getSelectedPaths(Page* page) const;
 
@@ -53,13 +55,16 @@ private:
 		return 0;
 	}
 
-	Curve** getCurveFromSegment2(const Segment_2& s) const {
-		Curve *sp = new Curve;
+	Curve* getCurveFromSegment2(const Segment_2& s) const {
+		Curve* sp = new Curve;
 		auto v0 = getVector(s.source());
 		auto v1 = getVector(s.target());
 		sp->appendSegment(v0, v1);
-		return &sp;
+		return sp;
 	}
+
+	double getWeightFromString(const String& str) const;
+
 	inline int cc(int c) const { return (int)(c*1000/255); }
 };
 
@@ -75,13 +80,16 @@ public:
 			std::vector<double> m_edgeWeights,
 			std::vector<unsigned> m_degree
 	) {
+		int cnt_deg_1 = 0;
 		for(size_t i = 0; i < p_points.size(); ++i) {
 			auto p = p_points[i];
 			add_vertex(Vertex(Point_2(p.first,p.second),m_degree[i],i));
+			if(m_degree[i] == 1) {++cnt_deg_1;}
 		}
 		for(size_t i = 0; i < m_edges.size(); ++i) {
 			auto e = m_edges[i];
 			add_edge(e.first,e.second,m_edgeWeights[i]);
 		}
+		set_num_of_deg1_vertices(cnt_deg_1);
 	}
 };

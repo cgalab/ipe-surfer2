@@ -11,16 +11,20 @@
 
 #include "ipesurfer2.h"
 
-bool SurfIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
+bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 	/* check if something is selected */
 	Page *page = data->iPage;
 	int sel = page->primarySelection();
 	if (sel < 0) {helper->message("No selection");return false;}
 
+	/* temporary, until fixed in surfer2 */
+	KineticTriangle::reset();
+	WavefrontVertex::reset();
+
 	auto selection = getSelectedPaths(page);
 
 	/* parse lua parameter what we have to do */
-	parseParameters(helper);
+	parseParameters(method);
 
 	/* convert selection and run surfer2 */
 	std::vector<std::pair<double,double>> points;
@@ -29,16 +33,18 @@ bool SurfIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 	std::vector<unsigned> vertexDegree;
 
 	convertToAlmostBasicInput(selection,points,edges,edgeWeights,vertexDegree);
-	ISBasicInput input(points,edges,edgeWeights,vertexDegree);
-	SkeletonStructure s(input);
-	s.initialize(-1);
-	s.wp.advance_to_end();
+	if(edges.size() < 2) {
+		helper->message("surfer 2 -- more than one segment please!"); return false;
+	}
 
-	auto& sk = s.get_skeleton();
+	ISBasicInput* input = new ISBasicInput(points,edges,edgeWeights,vertexDegree);
+	SkeletonStructure* s = new SkeletonStructure(*input);
+	s->initialize(restrict_component);
+	s->wp.advance_to_end();
+	auto& sk = s->get_skeleton();
 	auto sk_segments = getSKSegments(sk);
 
 	auto viewId = getMarkedView(page);
-
 
 	/* compute offset */
 	if(computeOffset) {
@@ -46,9 +52,8 @@ bool SurfIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 		if (!helper->getString("Enter offset-spec (e.g., 5,10,15)", str)) {
 			str = "5,10,15";
 		}
-		std::cerr << "length of str: " <<str.size() << std::endl;
 
-		std::string offset_spec(str.data());
+		std::string offset_spec(str.z());
 		std::vector<SkeletonDCEL::OffsetFamily> offsets;
 		for (const NT& offset_distance : sk.parse_offset_spec( offset_spec )) {
 			offsets.emplace_back(sk.make_offset(offset_distance));
@@ -71,13 +76,14 @@ bool SurfIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 			for (const auto& family : offsets) {
 				Shape shape;
 				for (const Segment_2& segment : family) {
-					Curve** sp = getCurveFromSegment2(segment);
-					shape.appendSubPath(*sp);
+					Curve* sp = getCurveFromSegment2(segment);
+					shape.appendSubPath(sp);
 				}
 				Path *obj = new Path(allAttr, shape);
 				page->append(ESecondarySelected, offLayer, obj);
 			}
 		}
+		helper->message("Offset Computed.");
 	}
 
 	/* compute skeleton */
@@ -92,8 +98,8 @@ bool SurfIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 		{
 			Shape shape;
 			for(auto s : sk_segments) {
-				Curve** sp = getCurveFromSegment2(s);
-				shape.appendSubPath(*sp);
+				Curve* sp = getCurveFromSegment2(s);
+				shape.appendSubPath(sp);
 			}
 
 			AllAttributes allAttr = data->iAttributes;
@@ -102,7 +108,11 @@ bool SurfIpelet::run(int, IpeletData *data, IpeletHelper *helper) {
 			Path *obj = new Path(allAttr, shape);
 			page->append(ESecondarySelected, skLayer, obj);
 		}
+		helper->message("Skeleton Computed.");
 	}
+
+	delete input;
+	delete s;
 
 	return true;
 }
@@ -133,7 +143,7 @@ void SurfIpelet::convertToAlmostBasicInput(
 	for(auto p : selection) {
 		std::cerr << "in for selection" << std::endl;
 		for(int sub = 0; sub < p->shape().countSubPaths(); ++sub) {
-			double weight = (p->pen().isNumber()) ? p->pen().number().toDouble() : 1.0;
+			double weight = getWeightFromString(p->pen().string());
 
 			if(p->shape().subPath(sub)->type() == SubPath::Type::ECurve) {
 
@@ -158,7 +168,7 @@ void SurfIpelet::convertToAlmostBasicInput(
 				if(p->shape().subPath(sub)->asCurve()->closed()) {
 					/* we need to add the closing edge if the curve is closed (not contained path) */
 					auto firstSeg = p->shape().subPath(sub)->asCurve()->segment(0);
-					auto lastSeg = p->shape().subPath(sub)->asCurve()->segment(p->shape().subPath(sub)->asCurve()->countSegments()-1);
+					auto lastSeg  = p->shape().subPath(sub)->asCurve()->segment(p->shape().subPath(sub)->asCurve()->countSegments()-1);
 
 					Vector vA = firstSeg.cp(0); Vector vB = lastSeg.last();
 					vertexPairs.push_back({vA,vB,weight});
@@ -179,10 +189,10 @@ void SurfIpelet::convertToAlmostBasicInput(
 				<< std::get<0>(edge).x  << "," << std::get<0>(edge).y
 				<< " and "
 				<< std::get<1>(edge).x  << "," << std::get<1>(edge).y
-				<< " id: "
+				<< " weight: "
 				<< std::get<2>(edge)
 				<< std::endl;
-		fflush(stderr);
+
 		auto itA = pointsMap.find({std::get<0>(edge).x,std::get<0>(edge).y});
 		auto itB = pointsMap.find({std::get<1>(edge).x,std::get<1>(edge).y});
 		assert(itA != pointsMap.end());
@@ -196,7 +206,7 @@ void SurfIpelet::convertToAlmostBasicInput(
 
 std::vector<Segment_2> SurfIpelet::getSKSegments(const SkeletonDCEL& sk) const {
 	std::vector<Segment_2> sk_segments;
-	const int ray_length = 20;
+	const int ray_length = 40;
 	for (auto hit = sk.halfedges_begin(); hit != sk.halfedges_end(); ++hit) {
 		if (hit > hit->opposite()) continue; /* Only paint one of every halfedge pair */
 		if (hit->is_input()) continue;
@@ -218,27 +228,49 @@ std::vector<Segment_2> SurfIpelet::getSKSegments(const SkeletonDCEL& sk) const {
 	return sk_segments;
 }
 
-void SurfIpelet::parseParameters(IpeletHelper* helper) {
-	String kindStr = helper->getParameter("kind");
-	auto cStr = kindStr.data();
-	int kind = atoi(cStr);
+//void SurfIpelet::parseParameters(IpeletHelper* helper) {
+//	String kindStr = helper->getParameter("kind");
+//	int kind = atoi(kindStr.z());
+void SurfIpelet::parseParameters(int kind) {
+//	String kindStr = helper->getParameter("kind");
+//	int kind = atoi(kindStr.z());
+
 	switch(kind) {
 	case 0:	computeSkeleton = true;
 			computeOffset   = false;
 			break;
-	case 1: computeSkeleton = false;
+
+	case 1:	computeSkeleton = true;
+			computeOffset   = false;
+			restrict_component = 0;
+			break;
+
+	case 2:	computeSkeleton = true;
+			computeOffset   = false;
+			restrict_component = 1;
+			break;
+
+	case 3: computeSkeleton = false;
 			computeOffset   = true;
 			break;
-	case 2: computeSkeleton = true;
+
+	case 4: computeSkeleton = true;
 			computeOffset   = true;
 			break;
-	case 3: computeSkeleton = true;
+
+	case 5: computeSkeleton = true;
 			computeOffset   = true;
 			separateLayers  = true;
 			break;
 	}
-
 }
 
-
+double SurfIpelet::getWeightFromString(const String& str) const {
+	std::string pen(str.z());
+	if(pen.compare("normal") == 0)   {return 0.4;}
+	if(pen.compare("heavier") == 0)  {return 0.8;}
+	if(pen.compare("fat") == 0) 	 {return 1.2;}
+	if(pen.compare("ultrafat") == 0) {return 2.0;}
+	return 0.4;
+}
 
