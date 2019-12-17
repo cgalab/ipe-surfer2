@@ -17,13 +17,9 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 	int sel = page->primarySelection();
 	if (sel < 0) {helper->message("No selection");return false;}
 
-	/* temporary, until fixed in surfer2 */
-	KineticTriangle::reset();
-	WavefrontVertex::reset();
-
 	auto selection = getSelectedPaths(page);
 
-	/* parse lua parameter what we have to do */
+	/* parse parameter from 'lua' what we have to do */
 	parseParameters(method);
 
 	/* convert selection and run surfer2 */
@@ -187,7 +183,6 @@ void SurfIpelet::convertToAlmostBasicInput(
 
 	for(auto& edge : vertexPairs) {
 //		printTuple(edge);
-
 		auto itA = pointsMap.find({std::get<0>(edge).x,std::get<0>(edge).y});
 		auto itB = pointsMap.find({std::get<1>(edge).x,std::get<1>(edge).y});
 		assert(itA != pointsMap.end());
@@ -264,6 +259,6 @@ double SurfIpelet::getWeightFromString(const Attribute& pen) const {
 	} else if(pen.isNumber()) {
 		return pen.number().toDouble();
 	}
+	/* otherweise we simple return 0.4 which is the 'default' normal value */
 	return 0.4;
 }
-
