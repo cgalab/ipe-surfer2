@@ -29,6 +29,6 @@ Copy or link the
 
 # License
 
-Monos is licenced under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
+ipe-surfer2 is licenced under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
 
 
