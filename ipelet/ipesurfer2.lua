@@ -21,13 +21,9 @@ about = [[ Create the (weighted) straight skeleton of a PSLG. ]]
 
 ipelet = false
 
--- parameters for the C++ code
---parameters = { kind = "0"}
-
 function run(model, num)
---  parameters.kind = tostring(num-1)
   if not ipelet then ipelet = assert(ipe.Ipelet("libipesurfer2")) end
-  model:runIpelet(label, ipelet, num) --, parameters)
+  model:runIpelet(label, ipelet, num)
 end
 
 methods = {
@@ -41,4 +37,4 @@ methods = {
 
 -- define a shortcut for this function
 shortcuts.ipelet_1_ipesurfer2 = "Shift+S"
---shortcuts.ipelet_3_ipesurfer2 = "Shift+E"
+--shortcuts.ipelet_2_ipesurfer2 = "Shift+E"
