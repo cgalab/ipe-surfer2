@@ -6,12 +6,12 @@ Proved the weight for a segment by selecting a specific 'pen-width'.
 # Requirements 
 
 - libipe-dev
-- all that is required by surfer2
+- Requirements of surfer2
 
 # Compiling
 
 	git clone --recurse-submodules https://github.com/guenthereder/ipe-surfer2
-	mkdir -p monos/build && cd monos/build
+	mkdir -p ipe-surfer2/build && cd ipe-surfer2/build
 	cmake .. 
 	make -j 6
 
