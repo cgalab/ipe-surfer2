@@ -5,6 +5,7 @@
 #include <ipepage.h>
 
 #include <vector>
+#include <string>
 
 #include "SkeletonDCEL.h"
 #include "BasicInput.h"
@@ -65,7 +66,19 @@ private:
 
 	double getWeightFromString(const Attribute& pen) const;
 
+	/* Attribute Color has a rgb range from 0 to 1000 for each value instead of 255 */
 	inline int cc(int c) const { return (int)(c*1000/255); }
+
+	/* DEBUG OUTPUT */
+	void printTuple(const std::tuple<Vector,Vector,double>& edge) const {
+		std::cerr << "in vertexpair : "
+				<< std::get<0>(edge).x  << "," << std::get<0>(edge).y
+				<< " and "
+				<< std::get<1>(edge).x  << "," << std::get<1>(edge).y
+				<< " weight: "
+				<< std::get<2>(edge)
+				<< std::endl;
+	}
 };
 
 IPELET_DECLARE Ipelet *newIpelet() {

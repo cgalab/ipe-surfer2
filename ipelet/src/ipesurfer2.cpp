@@ -72,16 +72,23 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 				page->setVisible(viewId,"offset",true);
 			}
 
-
+			std::vector<Path*> offsetsObjects;
 			for (const auto& family : offsets) {
 				Shape shape;
 				for (const Segment_2& segment : family) {
 					Curve* sp = getCurveFromSegment2(segment);
 					shape.appendSubPath(sp);
 				}
-				Path *obj = new Path(allAttr, shape);
-				page->append(ESecondarySelected, offLayer, obj);
+//				Path *obj = new Path(allAttr, shape);
+//				offsetsObjects.emplace_back(new Path(allAttr, shape));
 			}
+
+//			Group group(offsetsObjects);
+//			page->append(ESecondarySelected, offLayer, &group);
+//			for(auto obj : offsetsObjects) {
+//				page->append(ESecondarySelected, offLayer, obj);
+//			}
+
 		}
 		helper->message("Offset Computed.");
 	}
@@ -153,11 +160,6 @@ void SurfIpelet::convertToAlmostBasicInput(
 						std::cerr << "TODO: an EArc not yet handled!" << std::endl;
 					} else if(seg.type() == CurveSegment::Type::ESegment) {
 						Vector vA = seg.cp(0); Vector vB = seg.last();
-//						std::cerr << "adding seg " << i << " with vertices "
-//								<< vA.x << "," << vA.y
-//								<< " and "
-//								<< vB.x << "," << vB.y
-//								<< std::endl;
 
 						pointsMap.insert({{vA.x,vA.y},-1});
 						pointsMap.insert({{vB.x,vB.y},-1});
@@ -184,13 +186,7 @@ void SurfIpelet::convertToAlmostBasicInput(
 	vertexDegree.resize(points.size(),0);
 
 	for(auto& edge : vertexPairs) {
-//		std::cerr << "in vertexpair : "
-//				<< std::get<0>(edge).x  << "," << std::get<0>(edge).y
-//				<< " and "
-//				<< std::get<1>(edge).x  << "," << std::get<1>(edge).y
-//				<< " weight: "
-//				<< std::get<2>(edge)
-//				<< std::endl;
+//		printTuple(edge);
 
 		auto itA = pointsMap.find({std::get<0>(edge).x,std::get<0>(edge).y});
 		auto itB = pointsMap.find({std::get<1>(edge).x,std::get<1>(edge).y});
@@ -205,7 +201,7 @@ void SurfIpelet::convertToAlmostBasicInput(
 
 std::vector<Segment_2> SurfIpelet::getSKSegments(const SkeletonDCEL& sk) const {
 	std::vector<Segment_2> sk_segments;
-	const int ray_length = 40;
+	const int ray_length = 50;
 	for (auto hit = sk.halfedges_begin(); hit != sk.halfedges_end(); ++hit) {
 		if (hit > hit->opposite()) continue; /* Only paint one of every halfedge pair */
 		if (hit->is_input()) continue;
