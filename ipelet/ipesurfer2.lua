@@ -41,3 +41,4 @@ methods = {
 
 -- define a shortcut for this function
 shortcuts.ipelet_1_ipesurfer2 = "Shift+S"
+--shortcuts.ipelet_3_ipesurfer2 = "Shift+E"

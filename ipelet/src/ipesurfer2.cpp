@@ -143,7 +143,7 @@ void SurfIpelet::convertToAlmostBasicInput(
 	for(auto p : selection) {
 		std::cerr << "in for selection" << std::endl;
 		for(int sub = 0; sub < p->shape().countSubPaths(); ++sub) {
-			double weight = getWeightFromString(p->pen().string());
+			double weight = getWeightFromString(p->pen());
 
 			if(p->shape().subPath(sub)->type() == SubPath::Type::ECurve) {
 
@@ -228,13 +228,7 @@ std::vector<Segment_2> SurfIpelet::getSKSegments(const SkeletonDCEL& sk) const {
 	return sk_segments;
 }
 
-//void SurfIpelet::parseParameters(IpeletHelper* helper) {
-//	String kindStr = helper->getParameter("kind");
-//	int kind = atoi(kindStr.z());
 void SurfIpelet::parseParameters(int kind) {
-//	String kindStr = helper->getParameter("kind");
-//	int kind = atoi(kindStr.z());
-
 	switch(kind) {
 	case 0:	computeSkeleton = true;
 			computeOffset   = false;
@@ -265,12 +259,16 @@ void SurfIpelet::parseParameters(int kind) {
 	}
 }
 
-double SurfIpelet::getWeightFromString(const String& str) const {
-	std::string pen(str.z());
-	if(pen.compare("normal") == 0)   {return 0.4;}
-	if(pen.compare("heavier") == 0)  {return 0.8;}
-	if(pen.compare("fat") == 0) 	 {return 1.2;}
-	if(pen.compare("ultrafat") == 0) {return 2.0;}
+double SurfIpelet::getWeightFromString(const Attribute& pen) const {
+	if(pen.isString()) {
+		std::string str(pen.string().z());
+		if(str.compare("normal") == 0)   {return 0.4;}
+		if(str.compare("heavier") == 0)  {return 0.8;}
+		if(str.compare("fat") == 0) 	 {return 1.2;}
+		if(str.compare("ultrafat") == 0) {return 2.0;}
+	} else if(pen.isNumber()) {
+		return pen.number().toDouble();
+	}
 	return 0.4;
 }
 

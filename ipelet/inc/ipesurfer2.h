@@ -63,7 +63,7 @@ private:
 		return sp;
 	}
 
-	double getWeightFromString(const String& str) const;
+	double getWeightFromString(const Attribute& pen) const;
 
 	inline int cc(int c) const { return (int)(c*1000/255); }
 };
