@@ -141,7 +141,6 @@ void SurfIpelet::convertToAlmostBasicInput(
 
 	/* get segments from selection */
 	for(auto p : selection) {
-		std::cerr << "in for selection" << std::endl;
 		for(int sub = 0; sub < p->shape().countSubPaths(); ++sub) {
 			double weight = getWeightFromString(p->pen());
 
@@ -154,11 +153,11 @@ void SurfIpelet::convertToAlmostBasicInput(
 						std::cerr << "TODO: an EArc not yet handled!" << std::endl;
 					} else if(seg.type() == CurveSegment::Type::ESegment) {
 						Vector vA = seg.cp(0); Vector vB = seg.last();
-						std::cerr << "adding seg " << i << " with vertices "
-								<< vA.x << "," << vA.y
-								<< " and "
-								<< vB.x << "," << vB.y
-								<< std::endl;
+//						std::cerr << "adding seg " << i << " with vertices "
+//								<< vA.x << "," << vA.y
+//								<< " and "
+//								<< vB.x << "," << vB.y
+//								<< std::endl;
 
 						pointsMap.insert({{vA.x,vA.y},-1});
 						pointsMap.insert({{vB.x,vB.y},-1});
@@ -185,13 +184,13 @@ void SurfIpelet::convertToAlmostBasicInput(
 	vertexDegree.resize(points.size(),0);
 
 	for(auto& edge : vertexPairs) {
-		std::cerr << "in vertexpair : "
-				<< std::get<0>(edge).x  << "," << std::get<0>(edge).y
-				<< " and "
-				<< std::get<1>(edge).x  << "," << std::get<1>(edge).y
-				<< " weight: "
-				<< std::get<2>(edge)
-				<< std::endl;
+//		std::cerr << "in vertexpair : "
+//				<< std::get<0>(edge).x  << "," << std::get<0>(edge).y
+//				<< " and "
+//				<< std::get<1>(edge).x  << "," << std::get<1>(edge).y
+//				<< " weight: "
+//				<< std::get<2>(edge)
+//				<< std::endl;
 
 		auto itA = pointsMap.find({std::get<0>(edge).x,std::get<0>(edge).y});
 		auto itB = pointsMap.find({std::get<1>(edge).x,std::get<1>(edge).y});
