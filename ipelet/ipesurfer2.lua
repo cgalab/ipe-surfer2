@@ -1,4 +1,6 @@
--- surfer2.lua is a wrapper for surfer2 to be used in Ipe.
+-- ipe-surfer2 is an ipelet written in C++ and Lua. It is a wrapper
+-- for surfer2, a weighted straight skeleton implementation based
+-- exact arithmetic.
 --
 -- Copyright 2019 Günther Eder - geder@cs.sbg.ac.at
 --

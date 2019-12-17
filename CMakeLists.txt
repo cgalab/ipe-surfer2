@@ -2,9 +2,10 @@ cmake_minimum_required (VERSION 3.10)
 project ( ipesurfer2 )
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set (BUILD_SHARED_LIBS ON)
+
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_STANDARD 17)
-
 set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall" )
 
 set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -W -Wfloat-equal -Wundef -Wpointer-arith" )
@@ -45,7 +46,4 @@ configure_file (
 )
 include_directories("${PROJECT_BINARY_DIR}")
 
-set( SHARED_LIB "compile shared lib for surfer" ON )
-
-SET(SURFVERSION "1.99")
-subdirs (surfer2/surf ipelet)
+subdirs (surfer2 ipelet)

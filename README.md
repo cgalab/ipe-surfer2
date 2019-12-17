@@ -1,6 +1,7 @@
 # ipe-surfer2
 
-An ipelet that uses surfer2 and computes the (weighted) straight skeleton of a PSLG.
+ipe-surfer2 is an ipelet that uses surfer2 and computes the (weighted) straight skeleton of a PSLG.
+Proved the weight for a segment by selecting a specific 'pen-width'.
 
 # Requirements 
 
