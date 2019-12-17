@@ -265,15 +265,10 @@ void SurfIpelet::parseParameters(int kind) {
 }
 
 double SurfIpelet::getWeightFromString(const Attribute& pen) const {
-	if(pen.isString()) {
-		std::string str(pen.string().z());
-		if(str.compare("normal") == 0)   {return 0.4;}
-		if(str.compare("heavier") == 0)  {return 0.8;}
-		if(str.compare("fat") == 0) 	 {return 1.2;}
-		if(str.compare("ultrafat") == 0) {return 2.0;}
-	} else if(pen.isNumber()) {
-		return pen.number().toDouble();
-	}
-	/* otherweise we simple return 0.4 which is the 'default' normal value */
-	return 0.4;
+	std::string str(pen.string().z());
+	if(str.compare("normal") == 0)   {return 0.4;}
+	if(str.compare("heavier") == 0)  {return 0.8;}
+	if(str.compare("fat") == 0) 	 {return 1.2;}
+	if(str.compare("ultrafat") == 0) {return 2.0;}
+	return pen.number().toDouble();
 }
