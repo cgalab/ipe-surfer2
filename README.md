@@ -21,11 +21,9 @@ In case the repository is already checked out without the submodules enter use:
 
 # Usage
 
-Copy or link the 
+Copy or link (i) the `.lua-file` to `~/.ipe/ipelets` and (ii) the `.so-file` to a path in `LD_LIBRARY`
 
-.lua-file to `~/.ipe/ipelets`
-	
-.so-file to a path that is in `LD_LIBRARY`
+Ipe shows under `ipelets` a menu entry `Skeleton (Surfer2)` with various options.
 
 # License
 
