@@ -30,6 +30,8 @@
 
 #include "ipesurfer2.h"
 
+#include <ipegroup.h>
+
 bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 	/* check if something is selected */
 	Page *page = data->iPage;
@@ -86,16 +88,19 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 				page->setVisible(viewId,"offset",true);
 			}
 
+			Group* grp = new ipe::Group();
 			for (const auto& family : offsets) {
-				Shape shape;
+				Group* family_group = new ipe::Group();
 				for (const Segment_2& segment : family) {
+					Shape shape;
 					Curve* sp = getCurveFromSegment2(segment);
 					shape.appendSubPath(sp);
-
+					Path *obj = new Path(allAttr, shape);
+					family_group->push_back(obj);
 				}
-				Path *obj = new Path(allAttr, shape);
-				page->append(ESecondarySelected, offLayer, obj);
+				grp->push_back(family_group);
 			}
+			page->append(ESecondarySelected, offLayer, grp);
 
 		}
 		helper->message("Offset Computed.");
@@ -111,17 +116,20 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 		}
 
 		{
-			Shape shape;
-			for(auto s : sk_segments) {
-				Curve* sp = getCurveFromSegment2(s);
-				shape.appendSubPath(sp);
-			}
-
 			AllAttributes allAttr = data->iAttributes;
 			allAttr.iStroke  = Attribute(Color((int)(85*1000/255),(int)(170*1000/255),(int)(255*1000/255)));
 			allAttr.iLineCap = TLineCap::ERoundCap;
-			Path *obj = new Path(allAttr, shape);
-			page->append(ESecondarySelected, skLayer, obj);
+
+			Group* sk_group = new ipe::Group();
+			for(auto s : sk_segments) {
+				Shape shape;
+				Curve* sp = getCurveFromSegment2(s);
+				shape.appendSubPath(sp);
+				Path *obj = new Path(allAttr, shape);
+				sk_group->push_back(obj);
+			}
+
+			page->append(ESecondarySelected, skLayer, sk_group);
 		}
 		helper->message("Skeleton Computed.");
 	}
