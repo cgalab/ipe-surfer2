@@ -10,7 +10,7 @@ Proved the weight for a segment by selecting a specific 'pen-width'.
 
 # Compiling
 
-	git clone --recurse-submodules https://github.com/guenthereder/ipe-surfer2
+	git clone --recurse-submodules https://github.com/cgalab/ipe-surfer2
 	mkdir -p ipe-surfer2/build && cd ipe-surfer2/build
 	cmake .. 
 	make -j 6
