@@ -4,6 +4,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set (BUILD_SHARED_LIBS ON)
 set (LIB_ONLY ON)
+set (CMAKE_BUILD_TYPE "Release")
+
 
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_STANDARD 17)
@@ -39,12 +41,5 @@ endif()
 if (POLICY CMP0077)
   cmake_policy(SET CMP0077 NEW)
 endif ()
-
-configure_file (
-  "${PROJECT_SOURCE_DIR}/config.h.in"
-  "${PROJECT_BINARY_DIR}/config.h"
-  @ONLY
-)
-include_directories("${PROJECT_BINARY_DIR}")
 
 subdirs (surfer2 ipelet)
