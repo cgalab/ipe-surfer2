@@ -62,7 +62,7 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 
 	/* compute offset */
 	if(computeOffset) {
-		String str;
+		String str = "5,10,15";
 		if (!helper->getString("Enter offset-spec (e.g., 5,10,15)", str)) {
 			str = "5,10,15";
 		}
@@ -86,22 +86,16 @@ bool SurfIpelet::run(int method, IpeletData *data, IpeletHelper *helper) {
 				page->setVisible(viewId,"offset",true);
 			}
 
-			std::vector<Path*> offsetsObjects;
 			for (const auto& family : offsets) {
 				Shape shape;
 				for (const Segment_2& segment : family) {
 					Curve* sp = getCurveFromSegment2(segment);
 					shape.appendSubPath(sp);
-				}
-//				Path *obj = new Path(allAttr, shape);
-//				offsetsObjects.emplace_back(new Path(allAttr, shape));
-			}
 
-//			Group group(offsetsObjects);
-//			page->append(ESecondarySelected, offLayer, &group);
-//			for(auto obj : offsetsObjects) {
-//				page->append(ESecondarySelected, offLayer, obj);
-//			}
+				}
+				Path *obj = new Path(allAttr, shape);
+				page->append(ESecondarySelected, offLayer, obj);
+			}
 
 		}
 		helper->message("Offset Computed.");
