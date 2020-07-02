@@ -24,8 +24,15 @@ about = [[ Create the (weighted) straight skeleton of a PSLG. ]]
 ipelet = false
 
 function run(model, num)
-  if not ipelet then ipelet = assert(ipe.Ipelet("libipesurfer2")) end
-  model:runIpelet(label, ipelet, num)
+  if not ipelet then
+    ipelet = ipe.Ipelet("libipesurfer2")
+    if not ipelet then
+      model:warning("Warning: Could not load libipesurfer2.  Maybe it is not installed of LD_LIBRARY_PATH is not set to its install location.")
+    end
+  end
+  if ipelet then
+    model:runIpelet(label, ipelet, num)
+  end
 end
 
 methods = {
